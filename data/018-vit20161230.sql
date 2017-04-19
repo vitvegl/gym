@@ -9,7 +9,7 @@ insert into `workout` (`workout_date`, `workout_duration`, `athlet_id`)
 call set_workout_id ('vit', '2016-12-30');
 
 /* split */
-insert into `workout_type` (`type`) values ('split');
+insert into `workout_type` (`wtype`) values ('split');
 
 insert into `exercise` (`description`, `weight_kg`, `reps`, `rest_time_sec`, `workout_id`)
   values

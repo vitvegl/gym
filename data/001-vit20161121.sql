@@ -11,7 +11,7 @@ insert into `workout` (`workout_date`, `athlet_id`)
 call set_workout_id ('vit', '2016-11-21');
 
 /* fullbody */
-insert into `workout_type` (`type`) values ('fullbody');
+insert into `workout_type` (`wtype`) values ('fullbody');
 
 insert into `exercise` (`description`, `weight_kg`, `reps`, `rest_time_sec`, `workout_id`)
   values

@@ -17,7 +17,7 @@ create table `workout` (
 
 create table `workout_type` (
   `id` int unsigned not null auto_increment,
-  `type` enum('split', 'fullbody') default 'split' not null,
+  `wtype` enum('split', 'fullbody') default 'split' not null,
   primary key (`id`) using btree,
   constraint fk_workout_type foreign key (`id`) references `workout` (`id`) on delete restrict
 );
