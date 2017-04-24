@@ -50,4 +50,4 @@ insert into `equipment` (`id`) select id from exercise_id;
 
 drop view exercise_id;
 
-commit
+commit;
