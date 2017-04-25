@@ -46,6 +46,9 @@ insert into `style` (`id`) select id from exercise_id;
 /* гантелі */
 insert into `equipment` (`id`) select id from exercise_id;
 
+/* вправи з вагою тіла */
+call update_exercise_if_no_weight ('vit', '2016-12-28');
+
 drop view exercise_id;
 
 commit;

@@ -75,4 +75,16 @@ set @workout_id = (
 );
 end //
 
+create procedure update_exercise_if_no_weight (nickname varchar(30), workout_date date)
+begin
+update exercise e
+  join equipment eq on eq.id = e.id
+  join workout w on e.workout_id = w.id
+  join athlet a on w.athlet_id = a.id
+set eq.equipment = 'власна вага'
+where a.nickname = nickname
+  and w.workout_date = workout_date
+  and e.weight_kg = 0;
+end //
+
 delimiter ;
