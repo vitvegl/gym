@@ -94,4 +94,16 @@ where a.nickname = nickname
   and e.weight_kg = 0;
 end //
 
+create procedure update_exercise_set_equipment(nickname varchar(30), workout_date date, workout_equipment enum('штанга', 'гирі', 'тренажер'), description varchar(100))
+begin
+update exercise e
+  join equipment eq on eq.id = e.id
+  join workout w on e.workout_id = w.id
+  join athlet a on w.athlet_id = a.id
+set eq.equipment = workout_equipment
+where a.nickname = nickname
+  and w.workout_date = workout_date
+  and e.description = description;
+end //
+
 delimiter ;
