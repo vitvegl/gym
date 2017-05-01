@@ -13,7 +13,7 @@ insert into `workout_type` (`wtype`) value ('<%= @workout_type %>');
 
 insert into `exercise` (`description`, `weight_kg`, `reps`, `rest_time_sec`, `workout_id`)
   values
-(null, null, null, (select @workout_id));
+(null, null, null, null, (select @workout_id));
 
 set @workout_id = null;
 
