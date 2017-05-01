@@ -49,14 +49,21 @@ create table `equipment` (
 );
 
 delimiter //
-create procedure calculate_tonnage (_id int unsigned)
+create procedure calculate_tonnage (nickname varchar(30), workout_date date)
 begin
-update workout
+  declare tonnage int unsigned;
   set tonnage = (
-    select sum(weight_kg * reps) from exercise
-      where exercise.workout_id = _id
-  )
-where workout.id = _id;
+    select sum(weight_kg * reps) from exercise e
+      join workout w on e.workout_id = w.id
+      join athlet a on w.athlet_id = a.id
+    where a.nickname = nickname
+      and w.workout_date = workout_date
+  );
+  update workout w
+    join athlet a on w.athlet_id = a.id
+  set tonnage = (select tonnage)
+  where a.nickname = nickname
+    and w.workout_date = workout_date;
 end //
 
 create procedure set_athlet_id (nickname varchar(30))
