@@ -42,7 +42,7 @@ create table `style` (
 
 create table `equipment` (
   `id` int unsigned not null auto_increment,
-  `equipment` enum('штанга', 'гантелі', 'гирі', 'тренажер', 'власна вага') default 'гантелі' not null,
+  `equipment` enum('штанга', 'гантель', 'гантелі', 'гиря', 'гирі', 'тренажер', 'власна вага') default 'гантелі' not null,
   `description` varchar(100),
   primary key (`id`) using btree,
   constraint fk_equipment foreign key (`id`) references `exercise` (`id`) on delete restrict
@@ -94,7 +94,7 @@ where a.nickname = nickname
   and e.weight_kg = 0;
 end //
 
-create procedure update_exercise_set_equipment(nickname varchar(30), workout_date date, workout_equipment enum('штанга', 'гирі', 'тренажер'), description varchar(100))
+create procedure update_exercise_set_equipment(nickname varchar(30), workout_date date, workout_equipment enum('гантель', 'гантелі', 'штанга', 'гиря', 'гирі', 'тренажер'), description varchar(100))
 begin
 update exercise e
   join equipment eq on eq.id = e.id
