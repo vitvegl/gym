@@ -49,61 +49,59 @@ create table `equipment` (
 );
 
 delimiter //
-create procedure calculate_tonnage (nickname varchar(30), workout_date date)
+create procedure calculate_tonnage (nick varchar(30), wdate date)
 begin
-  declare tonnage int unsigned;
-  set tonnage = (
+  declare total int unsigned;
+  set total = (
     select sum(weight_kg * reps) from exercise e
       join workout w on e.workout_id = w.id
       join athlet a on w.athlet_id = a.id
-    where a.nickname = nickname
-      and w.workout_date = workout_date
+    where a.nickname = nick
+      and w.workout_date = wdate
   );
   update workout w
     join athlet a on w.athlet_id = a.id
-  set tonnage = (select tonnage)
-  where a.nickname = nickname
-    and w.workout_date = workout_date;
+  set tonnage = (select total)
+  where a.nickname = nick
+    and w.workout_date = wdate;
 end //
 
-create procedure set_athlet_id (nickname varchar(30))
+create procedure set_athlet_id (nick varchar(30))
 begin
-set @athlet_id = (
-  select id from athlet where nickname = nickname
-);
+set @athlet_id = (select id from athlet where nickname = nick);
 end //
 
-create procedure set_workout_id (nickname varchar(30), workout_date date)
+create procedure set_workout_id (nick varchar(30), wdate date)
 begin
 set @workout_id = (
   select w.id from workout w join athlet a
     on w.athlet_id = a.id
-  where a.nickname = nickname and w.workout_date = workout_date
+  where a.nickname = nick and w.workout_date = wdate
 );
 end //
 
-create procedure update_exercise_if_no_weight (nickname varchar(30), workout_date date)
+create procedure update_exercise_if_no_weight (nick varchar(30), wdate date)
 begin
 update exercise e
   join equipment eq on eq.id = e.id
   join workout w on e.workout_id = w.id
   join athlet a on w.athlet_id = a.id
 set eq.equipment = 'власна вага'
-where a.nickname = nickname
-  and w.workout_date = workout_date
+where a.nickname = nick
+  and w.workout_date = wdate
   and e.weight_kg = 0;
 end //
 
-create procedure update_exercise_set_equipment(nickname varchar(30), workout_date date, workout_equipment enum('гантель', 'гантелі', 'штанга', 'гиря', 'гирі', 'тренажер'), description varchar(100))
+create procedure update_exercise_set_equipment(nick varchar(30), wdate date, workout_equipment enum('гантель', 'гантелі', 'штанга', 'гиря', 'гирі', 'тренажер'), exercise_description varchar(100))
 begin
 update exercise e
   join equipment eq on eq.id = e.id
   join workout w on e.workout_id = w.id
   join athlet a on w.athlet_id = a.id
 set eq.equipment = workout_equipment
-where a.nickname = nickname
-  and w.workout_date = workout_date
-  and e.description = description;
+where a.nickname = nick
+  and w.workout_date = wdate
+  and e.description = exercise_description;
 end //
 
 delimiter ;
