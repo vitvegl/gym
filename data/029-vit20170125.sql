@@ -35,17 +35,16 @@ insert into `exercise` (`description`, `weight_kg`, `reps`, `rest_time_sec`, `wo
 
 set @workout_id = null;
 
-create view exercise_id as select e.id from exercise e
+/* без екіпірування */
+insert into `style` (`id`) select e.id from exercise e
   join workout w on e.workout_id = w.id
   join athlet a on w.athlet_id = a.id
 where a.nickname = 'vit' and w.workout_date = '2017-01-25';
 
-/* без екіпірування */
-insert into `style` (`id`) select id from exercise_id;
-
 /* гантелі */
-insert into `equipment` (`id`) select id from exercise_id;
-
-drop view exercise_id;
+insert into `equipment` (`id`) select e.id from exercise e
+  join workout w on e.workout_id = w.id
+  join athlet a on w.athlet_id = a.id
+where a.nickname = 'vit' and w.workout_date = '2017-01-25';
 
 commit;

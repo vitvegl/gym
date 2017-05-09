@@ -17,22 +17,22 @@ insert into `exercise` (`description`, `weight_kg`, `reps`, `rest_time_sec`, `wo
 
 set @workout_id = null;
 
-create view exercise_id as select e.id from exercise e
-  join workout w on e.workout_id = w.id
+/* <%= @style %> */
+<% if @style === "без екіпірування" %>insert into `style` (`id`) select e.id from exercise e
+<% else %>insert into `style` (`id`, `equipment`) select e.id, '<%= @style %>' from exercise e
+<% end %>  join workout w on e.workout_id = w.id
   join athlet a on w.athlet_id = a.id
 where a.nickname = '<%= @athlet %>'
   and w.workout_date = '<%= @date %>';
 
-/* <%= @style %> */
-<% if @style === "без екіпірування" %>insert into `style` (`id`) select id from exercise_id;
-<% else %>insert into `style` (`id`, `equipment`) select id, '<%= @style %>' from exercise_id;
-<% end %>
 /* <%= @equipment %> */
-<% if @equipment === "гантелі" %>insert into `equipment` (`id`) select id from exercise_id;
-<% else %>insert into `equipment` (`id`, `equipment`) select id, '<%= @equipment %>' from exercise_id;
-<% end %>
-call update_exercise_if_no_weight ('<%= @athlet %>', '<%= @date %>');
+<% if @equipment === "гантелі" %>insert into `equipment` (`id`) select e.id from exercise e
+<% else %>insert into `equipment` (`id`, `equipment`) select e.id, '<%= @equipment %>' from exercise e
+<% end %>  join workout w on e.workout_id = w.id
+  join athlet a on w.athlet_id = a.id
+where a.nickname = '<%= @athlet %>'
+  and w.workout_date = '<%= @date %>';
 
-drop view exercise_id;
+call update_exercise_if_no_weight ('<%= @athlet %>', '<%= @date %>');
 
 commit;

@@ -34,21 +34,21 @@ insert into `exercise` (`description`, `weight_kg`, `reps`, `rest_time_sec`, `wo
 
 set @workout_id = null;
 
-create view exercise_id as select e.id from exercise e
+/* без екіпірування */
+insert into `style` (`id`) select e.id from exercise e
   join workout w on e.workout_id = w.id
   join athlet a on w.athlet_id = a.id
 where a.nickname = 'vit'
   and w.workout_date = '20170430';
 
-/* без екіпірування */
-insert into `style` (`id`) select id from exercise_id;
-
 /* штанга */
-insert into `equipment` (`id`, `equipment`) select id, 'штанга' from exercise_id;
+insert into `equipment` (`id`, `equipment`) select e.id, 'штанга' from exercise e
+  join workout w on e.workout_id = w.id
+  join athlet a on w.athlet_id = a.id
+where a.nickname = 'vit'
+  and w.workout_date = '20170430';
 
 /* Пулл-овер з гантелею */
 call update_exercise_set_equipment ('vit', '20170430', 'гантель', 'Пулл-овер стоячи');
-
-drop view exercise_id;
 
 commit;

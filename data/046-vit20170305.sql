@@ -33,24 +33,24 @@ insert into `exercise` (`description`, `weight_kg`, `reps`, `rest_time_sec`, `wo
 
 set @workout_id = null;
 
-create view exercise_id as select e.id from exercise e
+/* без екіпірування */
+insert into `style` (`id`) select e.id from exercise e
   join workout w on e.workout_id = w.id
   join athlet a on w.athlet_id = a.id
 where a.nickname = 'vit'
   and w.workout_date = '2017-03-05';
 
-/* без екіпірування */
-insert into `style` (`id`) select id from exercise_id;
-
 /* гантелі */
-insert into `equipment` (`id`) select id from exercise_id;
+insert into `equipment` (`id`) select e.id from exercise e
+  join workout w on e.workout_id = w.id
+  join athlet a on w.athlet_id = a.id
+where a.nickname = 'vit'
+  and w.workout_date = '2017-03-05';
 
 /* Присідання з гирями */
 call update_exercise_set_equipment ('vit', '2017-03-05', 'гирі', 'Присідання');
 
 /* Станова тяга зі штангою */
 call update_exercise_set_equipment ('vit', '2017-03-05', 'штанга', 'Станова тяга');
-
-drop view exercise_id;
 
 commit;
