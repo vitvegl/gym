@@ -7,6 +7,8 @@ create table `athlet` (
 create table `workout` (
   `id` int unsigned not null auto_increment,
   `workout_date` date unique not null,
+  `start_time` time,
+  `finish_time` time,
   `workout_duration` time,
   `tonnage` int unsigned,
   `details` text,
@@ -49,6 +51,19 @@ create table `equipment` (
 );
 
 delimiter //
+
+create procedure calculate_workout_duration (nick varchar(30), wdate date)
+begin
+  update workout w
+    join athlet a on w.athlet_id = a.id
+  set workout_duration = timediff(w.finish_time, w.start_time)
+  where a.nickname = nick
+    and w.workout_date = wdate
+    and w.workout_duration is null
+    and w.finish_time is not null
+    and w.start_time is not null;
+end //
+
 create procedure calculate_tonnage (nick varchar(30), wdate date)
 begin
   declare total int unsigned;
