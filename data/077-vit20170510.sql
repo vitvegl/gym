@@ -1,4 +1,4 @@
-
+start transaction;
 
 call set_athlet_id ('vit');
 
@@ -42,4 +42,4 @@ insert into `equipment` (`id`) select e.id from exercise e
 where a.nickname = 'vit'
   and w.workout_date = '20170510';
 
-
+commit;
