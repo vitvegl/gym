@@ -34,5 +34,9 @@ where a.nickname = '<%= @athlet %>'
   and w.workout_date = '<%= @date %>';
 
 call update_exercise_if_no_weight ('<%= @athlet %>', '<%= @date %>');
+call calculate_workout_duration ('<%= @athlet %>', '<%= @date %>');
+call calculate_tonnage ('<%= @athlet %>', '<%= @date %>');
+
+set @athlet_id = null;
 
 commit;
