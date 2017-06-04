@@ -1,4 +1,4 @@
-require 'rails/all'
+require 'active_record'
 
 class Athlet < ActiveRecord::Base
   self.table_name = "athlet"
