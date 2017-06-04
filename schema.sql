@@ -7,8 +7,8 @@ create table `athlet` (
 create table `workout` (
   `id` int unsigned not null auto_increment,
   `workout_date` date unique not null,
-  `start_time` time,
-  `finish_time` time,
+  `start_time` datetime unique,
+  `finish_time` datetime unique,
   `workout_duration` time,
   `tonnage` int unsigned,
   `details` text,
@@ -30,6 +30,7 @@ create table `exercise` (
   `weight_kg` smallint unsigned not null,
   `reps` tinyint unsigned not null,
   `rest_time_sec` smallint unsigned not null,
+  `set_number` tinyint unsigned,
   `workout_id` int unsigned not null,
   primary key (`id`) using btree,
   constraint fk_exercise foreign key (`workout_id`) references `workout` (`id`) on delete restrict
@@ -53,6 +54,7 @@ create table `equipment` (
 delimiter //
 
 create procedure calculate_workout_duration (nick varchar(30), wdate date)
+comment "it needs to set '%Y-%m-%d %H:%M' time format"
 begin
   update workout w
     join athlet a on w.athlet_id = a.id
@@ -107,7 +109,7 @@ where a.nickname = nick
   and e.weight_kg = 0;
 end //
 
-create procedure update_exercise_set_equipment(nick varchar(30), wdate date, workout_equipment enum('гантель', 'гантелі', 'штанга', 'гиря', 'гирі', 'тренажер'), exercise_description varchar(100))
+create procedure update_exercise_set_equipment (nick varchar(30), wdate date, workout_equipment enum('гантель', 'гантелі', 'штанга', 'гиря', 'гирі', 'тренажер'), exercise_description varchar(100), sequence_set_number tinyint unsigned)
 begin
 update exercise e
   join equipment eq on eq.id = e.id
@@ -118,5 +120,30 @@ where a.nickname = nick
   and w.workout_date = wdate
   and e.description = exercise_description;
 end //
+
+create procedure update_exercise_set_style (nick varchar(30), wdate date, workout_equipment enum('штанга', 'гантель', 'гантелі', 'гиря', 'гирі', 'тренажер', 'власна вага'), workout_style_equipment enum('пояс', 'лямки', 'бинти', 'одяг', 'без екіпірування'), exercise_description varchar(100), sequence_set_number tinyint unsigned)
+begin
+update exercise e
+  join equipment eq on eq.id = e.id
+  join style s on s.id = e.id
+  join workout w on e.workout_id = w.id
+  join athlet a on w.athlet_id = a.id
+set s.equipment = workout_style_equipment
+where a.nickname = nick
+  and w.workout_date = wdate
+  and eq.equipment = workout_equipment
+  and e.description = exercise_description
+  and e.set_number = sequence_set_number;
+end //
+
+/*
+create trigger trig_sequence_set_number_chk before insert on `exercise`
+for each row
+begin
+if `exercise`.`set_number` = 0 then
+signal sqlstate '12345';
+end if;
+end //
+*/
 
 delimiter ;

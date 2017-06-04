@@ -4,7 +4,7 @@ call set_athlet_id ('vit');
 
 insert into `workout` (`workout_date`, `start_time`, `finish_time`, `athlet_id`)
   values
-('20170517', '20:35', '20:49', (select @athlet_id));
+('20170517', '2017-05-17 20:35', '2017-05-17 20:49', (select @athlet_id));
 
 call set_workout_id ('vit', '20170517');
 

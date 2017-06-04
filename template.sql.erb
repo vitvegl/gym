@@ -11,9 +11,9 @@ call set_workout_id ('<%= @athlet %>', '<%= @date %>');
 /* <%= @workout_type %> */
 insert into `workout_type` (`wtype`) value ('<%= @workout_type %>');
 
-insert into `exercise` (`description`, `weight_kg`, `reps`, `rest_time_sec`, `workout_id`)
+insert into `exercise` (`description`, `weight_kg`, `reps`, `rest_time_sec`, `set_number`, `workout_id`)
   values
-(null, null, null, null, (select @workout_id));
+(null, null, null, null, 1, (select @workout_id));
 
 set @workout_id = null;
 

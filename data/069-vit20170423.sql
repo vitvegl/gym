@@ -11,21 +11,21 @@ call set_workout_id ('vit', '20170423');
 /* split */
 insert into `workout_type` (`wtype`) value ('split');
 
-insert into `exercise` (`description`, `weight_kg`, `reps`, `rest_time_sec`, `workout_id`)
+insert into `exercise` (`description`, `weight_kg`, `reps`, `rest_time_sec`, `set_number`, `workout_id`)
   values
-('Жим лежачи', 35, 10, 60, (select @workout_id)),
-('Жим лежачи', 35, 10, 60, (select @workout_id)),
-('Жим лежачи', 40, 8, 90, (select @workout_id)),
-('Жим лежачи', 50, 8, 120, (select @workout_id)),
-('Жим лежачи', 50, 8, 120, (select @workout_id)),
-('Жим лежачи', 56, 1, 120, (select @workout_id)),
-('Жим лежачи', 56, 1, 120, (select @workout_id)),
-('Жим лежачи', 60, 0, 120, (select @workout_id)),
-('Станова тяга', 50, 10, 90, (select @workout_id)),
-('Станова тяга', 75, 6, 120, (select @workout_id)),
-('Станова тяга', 85, 3, 120, (select @workout_id)),
-('Станова тяга', 101, 1, 120, (select @workout_id)),
-('Шраги', 32, 10, 0, (select @workout_id));
+('Жим лежачи', 35, 10, 60, 1, (select @workout_id)),
+('Жим лежачи', 35, 10, 60, 2, (select @workout_id)),
+('Жим лежачи', 40, 8, 90, 3, (select @workout_id)),
+('Жим лежачи', 50, 8, 120, 4, (select @workout_id)),
+('Жим лежачи', 50, 8, 120, 5, (select @workout_id)),
+('Жим лежачи', 56, 1, 120, 6, (select @workout_id)),
+('Жим лежачи', 56, 1, 120, 7, (select @workout_id)),
+('Жим лежачи', 60, 0, 120, 8, (select @workout_id)),
+('Станова тяга', 50, 10, 90, 1, (select @workout_id)),
+('Станова тяга', 75, 6, 120, 2, (select @workout_id)),
+('Станова тяга', 85, 3, 120, 3, (select @workout_id)),
+('Станова тяга', 101, 1, 120, 4, (select @workout_id)),
+('Шраги', 32, 10, 0, 1, (select @workout_id));
 
 set @workout_id = null;
 
@@ -44,6 +44,6 @@ where a.nickname = 'vit'
   and w.workout_date = '20170423';
 
 /* Шраги з гирями */
-call update_exercise_set_equipment ('vit', '20170423', 'гирі', 'Шраги');
+call update_exercise_set_equipment ('vit', '20170423', 'гирі', 'Шраги', 1);
 
 commit;
