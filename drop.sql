@@ -13,5 +13,12 @@ drop procedure set_workout_id;
 drop procedure update_exercise_if_no_weight;
 drop procedure update_exercise_set_equipment;
 drop procedure update_exercise_set_style;
+drop procedure athlet_nickname_validation;
+drop procedure workout_time_validation;
+drop procedure workout_duration_validation;
+drop procedure workout_tonnage_validation;
+drop procedure exercise_description_validation;
+drop procedure exercise_rest_time_validation;
+drop procedure exercise_set_number_validation;
 
 /* drop trigger if exists trig_sequence_set_number_chk; */

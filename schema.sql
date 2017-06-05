@@ -136,14 +136,148 @@ where a.nickname = nick
   and e.set_number = sequence_set_number;
 end //
 
-/*
-create trigger trig_sequence_set_number_chk before insert on `exercise`
-for each row
+create procedure athlet_nickname_validation (nick varchar(30))
 begin
-if `exercise`.`set_number` = 0 then
-signal sqlstate '12345';
+if (char_length(nick) < 3) then
+signal sqlstate '12345'
+set message_text = 'nickname must be contains minimum 3 characters'; 
 end if;
 end //
-*/
+
+create trigger trig_athlet_nickname_insert_chk before insert on athlet
+for each row
+begin
+call athlet_nickname_validation (NEW.nickname);
+end //
+
+create trigger trig_athlet_nickname_update_chk before update on athlet
+for each row
+begin
+call athlet_nickname_validation (NEW.nickname);
+end //
+
+create procedure workout_time_validation (stime datetime, ftime datetime)
+begin
+if ((stime is not null) and (ftime is not null)) then
+  if (unix_timestamp(stime) > unix_timestamp(ftime)) then
+  signal sqlstate '12346'
+  set message_text = 'time range must be correct';
+  end if;
+end if;
+end //
+
+create trigger trig_workout_time_insert_chk before insert on workout
+for each row
+begin
+call workout_time_validation (NEW.start_time, NEW.finish_time);
+end //
+
+create trigger trig_workout_time_update_chk before update on workout
+for each row
+begin
+call workout_time_validation (NEW.start_time, NEW.finish_time);
+end //
+
+create procedure workout_duration_validation (duration time)
+begin
+if (duration is not null) then
+  if ((time(duration) < time('00:03:00'))) then
+  signal sqlstate '12347'
+  set message_text = 'workout.workout_duration must be longer than 3 minutes';
+  end if;
+end if;
+end //
+
+create trigger trig_workout_duration_insert_chk before insert on workout
+for each row
+begin
+call workout_duration_validation (NEW.workout_duration);
+end //
+
+create trigger trig_workout_duration_update_chk before update on workout
+for each row
+begin
+call workout_duration_validation (NEW.workout_duration);
+end //
+
+create procedure workout_tonnage_validation (total int unsigned)
+begin
+if total = 0 then
+signal sqlstate '12348'
+set message_text = 'workout.tonnage must be > 0';
+end if;
+end //
+
+create trigger trig_workout_tonnage_insert_chk before insert on workout
+for each row
+begin
+call workout_tonnage_validation (NEW.tonnage);
+end //
+
+create trigger trig_workout_tonnage_update_chk before update on workout
+for each row
+begin
+call workout_tonnage_validation (NEW.tonnage);
+end //
+
+create procedure exercise_description_validation (descr varchar(100))
+begin
+if (char_length(descr) < 3) then
+signal sqlstate '12349'
+set message_text = 'exercise.description must be contains minimum 3 characters';
+end if;
+end //
+
+create trigger trig_exercise_description_insert_chk before insert on exercise
+for each row
+begin
+call exercise_description_validation (NEW.description);
+end //
+
+create trigger trig_exercise_description_update_chk before update on exercise
+for each row
+begin
+call exercise_description_validation (NEW.description);
+end //
+
+create procedure exercise_rest_time_validation (rtime smallint unsigned)
+begin
+if ((rtime != 0) and (rtime < 30)) then
+signal sqlstate '12351'
+set message_text = 'exercise.rest_time_src must be integer and >= 30 seconds';
+end if;
+end //
+
+create trigger trig_exercise_rest_time_insert_chk before insert on exercise
+for each row
+begin
+call exercise_rest_time_validation (NEW.rest_time_sec);
+end //
+
+create trigger trig_exercise_rest_time_update_chk before update on exercise
+for each row
+begin
+call exercise_rest_time_validation (NEW.rest_time_sec);
+end //
+
+create procedure exercise_set_number_validation (seq_number tinyint unsigned)
+begin
+if seq_number = 0 then
+signal sqlstate '12352'
+set message_text = 'exercise.set_number must be integer and > 0';
+end if;
+end //
+
+create trigger trig_exercise_set_number_insert_chk before insert on exercise
+for each row
+begin
+call exercise_set_number_validation (NEW.set_number);
+end //
+
+create trigger trig_exercise_set_number_update_chk before update on exercise
+for each row
+begin
+call exercise_set_number_validation (NEW.set_number);
+end //
 
 delimiter ;
