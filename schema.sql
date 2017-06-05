@@ -1,6 +1,6 @@
 create table `athlet` (
   `id` int unsigned not null auto_increment,
-  `nickname` varchar(30) not null,
+  `nickname` varchar(30) unique not null,
   primary key (`id`)
 );
 
