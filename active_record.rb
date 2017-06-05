@@ -1,5 +1,4 @@
 require 'active_record'
-require 'mysql2'
 require 'native_enum'
 
 class Athlet < ActiveRecord::Base
