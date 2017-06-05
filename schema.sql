@@ -27,7 +27,7 @@ create table `workout_type` (
 create table `exercise` (
   `id` int unsigned not null auto_increment,
   `description` varchar(100) not null,
-  `weight_kg` smallint unsigned not null,
+  `weight_kg` float unsigned not null,
   `reps` tinyint unsigned not null,
   `rest_time_sec` smallint unsigned not null,
   `set_number` tinyint unsigned,
