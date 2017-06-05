@@ -244,7 +244,7 @@ create procedure exercise_rest_time_validation (rtime smallint unsigned)
 begin
 if ((rtime != 0) and (rtime < 30)) then
 signal sqlstate '12351'
-set message_text = 'exercise.rest_time_src must be integer and >= 30 seconds';
+set message_text = 'exercise.rest_time_sec must be integer and >= 30 seconds';
 end if;
 end //
 
