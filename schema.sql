@@ -118,7 +118,8 @@ update exercise e
 set eq.equipment = workout_equipment
 where a.nickname = nick
   and w.workout_date = wdate
-  and e.description = exercise_description;
+  and e.description = exercise_description
+  and e.set_number = sequence_set_number;
 end //
 
 create procedure update_exercise_set_style (nick varchar(30), wdate date, workout_equipment enum('штанга', 'гантель', 'гантелі', 'гиря', 'гирі', 'тренажер', 'власна вага'), workout_style_equipment enum('пояс', 'лямки', 'бинти', 'одяг', 'без екіпірування'), exercise_description varchar(100), sequence_set_number tinyint unsigned)
