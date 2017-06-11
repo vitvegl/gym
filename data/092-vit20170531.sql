@@ -45,6 +45,11 @@ where a.nickname = 'vit'
   and w.workout_date = '20170531';
 
 call calculate_workout_duration ('vit', '20170531');
+
+call update_exercise_set_equipment ('vit', '20170531', 'гантель', 'Пулл-овер стоячи', 1);
+call update_exercise_set_equipment ('vit', '20170531', 'гантель', 'Пулл-овер стоячи', 2);
+call update_exercise_set_equipment ('vit', '20170531', 'гантель', 'Пулл-овер стоячи', 3);
+
 call calculate_tonnage ('vit', '20170531');
 
 set @athlet_id = null;

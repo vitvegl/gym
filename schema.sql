@@ -69,13 +69,41 @@ end //
 create procedure calculate_tonnage (nick varchar(30), wdate date)
 begin
   declare total int unsigned;
+  declare dumbbells_total_weight int unsigned;
+
   set total = (
     select sum(weight_kg * reps) from exercise e
+      join equipment eq on eq.id = e.id
       join workout w on e.workout_id = w.id
       join athlet a on w.athlet_id = a.id
     where a.nickname = nick
       and w.workout_date = wdate
+      and eq.equipment in ('штанга', 'гантель', 'гиря', 'тренажер')
   );
+
+  if (total is null) then
+    set total = (
+      select sum(weight_kg * 2 * reps) from exercise e
+        join workout w on e.workout_id = w.id
+        join athlet a on w.athlet_id = a.id
+      where a.nickname = nick
+        and w.workout_date = wdate
+    );
+  elseif (total > 0) then
+    set dumbbells_total_weight = (
+      select sum(weight_kg * 2 * reps) from exercise e
+        join equipment eq on eq.id = e.id
+        join workout w on e.workout_id = w.id
+        join athlet a on w.athlet_id = a.id
+      where a.nickname = nick
+        and w.workout_date = wdate
+        and eq.equipment in ('гантелі', 'гирі')
+    );
+    if dumbbells_total_weight > 0 then
+      set total = total + dumbbells_total_weight;
+    end if;
+  end if;
+
   update workout w
     join athlet a on w.athlet_id = a.id
   set tonnage = (select total)

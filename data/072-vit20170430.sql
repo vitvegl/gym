@@ -30,7 +30,7 @@ insert into `exercise` (`description`, `weight_kg`, `reps`, `rest_time_sec`, `se
 ('Шраги', 40, 20, 120, 1, (select @workout_id)),
 ('Шраги', 50, 20, 120, 2, (select @workout_id)),
 ('Пулл-овер стоячи', 12, 25, 120, 1, (select @workout_id)),
-('Пулл-овер стоячи', 12, 21, 120, 2, (select @workout_id));
+('Пулл-овер стоячи', 12, 21, 0, 2, (select @workout_id));
 
 set @workout_id = null;
 
@@ -51,5 +51,9 @@ where a.nickname = 'vit'
 /* Пулл-овер з гантелею */
 call update_exercise_set_equipment ('vit', '20170430', 'гантель', 'Пулл-овер стоячи', 1);
 call update_exercise_set_equipment ('vit', '20170430', 'гантель', 'Пулл-овер стоячи', 2);
+
+call calculate_tonnage ('vit', '20170430');
+
+set @athlet_id = null;
 
 commit;
