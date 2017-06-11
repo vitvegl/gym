@@ -121,7 +121,6 @@ CREATE TABLE `exercise` (
   `workout_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   KEY `fk_exercise` (`workout_id`),
-  KEY `ind_description` (`description`),
   CONSTRAINT `fk_exercise` FOREIGN KEY (`workout_id`) REFERENCES `workout` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1592 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -448,6 +447,382 @@ LOCK TABLES `workout_type` WRITE;
 INSERT INTO `workout_type` VALUES (1,'fullbody'),(2,'fullbody'),(3,'fullbody'),(4,'fullbody'),(5,'split'),(6,'split'),(7,'split'),(8,'split'),(9,'split'),(10,'split'),(11,'split'),(12,'split'),(13,'split'),(14,'split'),(15,'split'),(16,'split'),(17,'split'),(18,'split'),(19,'split'),(20,'split'),(21,'split'),(22,'split'),(23,'split'),(24,'split'),(25,'split'),(26,'split'),(27,'split'),(28,'split'),(29,'split'),(30,'split'),(31,'split'),(32,'split'),(33,'split'),(34,'split'),(35,'split'),(36,'split'),(37,'split'),(38,'split'),(39,'split'),(40,'split'),(41,'split'),(42,'split'),(43,'split'),(44,'split'),(45,'split'),(46,'split'),(47,'split'),(48,'split'),(49,'split'),(50,'split'),(51,'split'),(52,'split'),(53,'split'),(54,'split'),(55,'split'),(56,'split'),(57,'split'),(58,'split'),(59,'split'),(60,'split'),(61,'split'),(62,'split'),(63,'split'),(64,'split'),(65,'split'),(66,'split'),(67,'split'),(68,'split'),(69,'split'),(70,'split'),(71,'split'),(72,'split'),(73,'split'),(74,'split'),(75,'split'),(76,'split'),(77,'split'),(78,'split'),(79,'split'),(80,'split'),(81,'split'),(82,'split'),(83,'split'),(84,'split'),(85,'split'),(86,'split'),(87,'split'),(88,'split'),(89,'split'),(90,'split'),(91,'split'),(92,'split'),(93,'split'),(94,'split'),(95,'split'),(96,'split'),(97,'split'),(98,'split'),(99,'split');
 /*!40000 ALTER TABLE `workout_type` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Dumping events for database 'gym'
+--
+
+--
+-- Dumping routines for database 'gym'
+--
+/*!50003 DROP PROCEDURE IF EXISTS `athlet_nickname_validation` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`athlet`@`localhost` PROCEDURE `athlet_nickname_validation`(nick varchar(30))
+begin
+if (char_length(nick) < 3) then
+signal sqlstate '12345'
+set message_text = 'nickname must be contains minimum 3 characters'; 
+end if;
+end ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `calculate_tonnage` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`athlet`@`localhost` PROCEDURE `calculate_tonnage`(nick varchar(30), wdate date)
+begin
+  declare total int unsigned;
+  declare dumbbells_total_weight int unsigned;
+
+  set total = (
+    select sum(weight_kg * reps) from exercise e
+      join equipment eq on eq.id = e.id
+      join workout w on e.workout_id = w.id
+      join athlet a on w.athlet_id = a.id
+    where a.nickname = nick
+      and w.workout_date = wdate
+      and eq.equipment in ('штанга', 'гантель', 'гиря', 'тренажер')
+  );
+
+  if (total is null) then
+    set total = (
+      select sum(weight_kg * 2 * reps) from exercise e
+        join workout w on e.workout_id = w.id
+        join athlet a on w.athlet_id = a.id
+      where a.nickname = nick
+        and w.workout_date = wdate
+    );
+  elseif (total > 0) then
+    set dumbbells_total_weight = (
+      select sum(weight_kg * 2 * reps) from exercise e
+        join equipment eq on eq.id = e.id
+        join workout w on e.workout_id = w.id
+        join athlet a on w.athlet_id = a.id
+      where a.nickname = nick
+        and w.workout_date = wdate
+        and eq.equipment in ('гантелі', 'гирі')
+    );
+    if dumbbells_total_weight > 0 then
+      set total = total + dumbbells_total_weight;
+    end if;
+  end if;
+
+  update workout w
+    join athlet a on w.athlet_id = a.id
+  set tonnage = (select total)
+  where a.nickname = nick
+    and w.workout_date = wdate;
+end ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `calculate_workout_duration` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`athlet`@`localhost` PROCEDURE `calculate_workout_duration`(nick varchar(30), wdate date)
+    COMMENT 'it needs to set ''%Y-%m-%d %H:%M'' time format'
+begin
+  update workout w
+    join athlet a on w.athlet_id = a.id
+  set workout_duration = timediff(w.finish_time, w.start_time)
+  where a.nickname = nick
+    and w.workout_date = wdate
+    and w.workout_duration is null
+    and w.finish_time is not null
+    and w.start_time is not null;
+end ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `exercise_description_validation` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`athlet`@`localhost` PROCEDURE `exercise_description_validation`(descr varchar(100))
+begin
+if (char_length(descr) < 3) then
+signal sqlstate '12349'
+set message_text = 'exercise.description must be contains minimum 3 characters';
+end if;
+end ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `exercise_rest_time_validation` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`athlet`@`localhost` PROCEDURE `exercise_rest_time_validation`(rtime smallint unsigned)
+begin
+if ((rtime != 0) and (rtime < 30)) then
+signal sqlstate '12351'
+set message_text = 'exercise.rest_time_sec must be integer and >= 30 seconds';
+end if;
+end ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `exercise_set_number_validation` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`athlet`@`localhost` PROCEDURE `exercise_set_number_validation`(seq_number tinyint unsigned)
+begin
+if seq_number = 0 then
+signal sqlstate '12352'
+set message_text = 'exercise.set_number must be integer and > 0';
+end if;
+end ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `set_athlet_id` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`athlet`@`localhost` PROCEDURE `set_athlet_id`(nick varchar(30))
+begin
+set @athlet_id = (select id from athlet where nickname = nick);
+end ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `set_workout_id` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`athlet`@`localhost` PROCEDURE `set_workout_id`(nick varchar(30), wdate date)
+begin
+set @workout_id = (
+  select w.id from workout w join athlet a
+    on w.athlet_id = a.id
+  where a.nickname = nick and w.workout_date = wdate
+);
+end ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `update_exercise_if_no_weight` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`athlet`@`localhost` PROCEDURE `update_exercise_if_no_weight`(nick varchar(30), wdate date)
+begin
+update exercise e
+  join equipment eq on eq.id = e.id
+  join workout w on e.workout_id = w.id
+  join athlet a on w.athlet_id = a.id
+set eq.equipment = 'власна вага'
+where a.nickname = nick
+  and w.workout_date = wdate
+  and e.weight_kg = 0;
+end ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `update_exercise_set_equipment` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`athlet`@`localhost` PROCEDURE `update_exercise_set_equipment`(nick varchar(30), wdate date, workout_equipment enum('гантель', 'гантелі', 'штанга', 'гиря', 'гирі', 'тренажер'), exercise_description varchar(100), sequence_set_number tinyint unsigned)
+begin
+update exercise e
+  join equipment eq on eq.id = e.id
+  join workout w on e.workout_id = w.id
+  join athlet a on w.athlet_id = a.id
+set eq.equipment = workout_equipment
+where a.nickname = nick
+  and w.workout_date = wdate
+  and e.description = exercise_description
+  and e.set_number = sequence_set_number;
+end ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `update_exercise_set_style` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`athlet`@`localhost` PROCEDURE `update_exercise_set_style`(nick varchar(30), wdate date, workout_equipment enum('штанга', 'гантель', 'гантелі', 'гиря', 'гирі', 'тренажер', 'власна вага'), workout_style_equipment enum('пояс', 'лямки', 'бинти', 'одяг', 'без екіпірування'), exercise_description varchar(100), sequence_set_number tinyint unsigned)
+begin
+update exercise e
+  join equipment eq on eq.id = e.id
+  join style s on s.id = e.id
+  join workout w on e.workout_id = w.id
+  join athlet a on w.athlet_id = a.id
+set s.equipment = workout_style_equipment
+where a.nickname = nick
+  and w.workout_date = wdate
+  and eq.equipment = workout_equipment
+  and e.description = exercise_description
+  and e.set_number = sequence_set_number;
+end ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `workout_duration_validation` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`athlet`@`localhost` PROCEDURE `workout_duration_validation`(duration time)
+begin
+if (duration is not null) then
+  if ((time(duration) < time('00:03:00'))) then
+  signal sqlstate '12347'
+  set message_text = 'workout.workout_duration must be longer than 3 minutes';
+  end if;
+end if;
+end ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `workout_time_validation` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`athlet`@`localhost` PROCEDURE `workout_time_validation`(stime datetime, ftime datetime)
+begin
+if ((stime is not null) and (ftime is not null)) then
+  if (unix_timestamp(stime) > unix_timestamp(ftime)) then
+  signal sqlstate '12346'
+  set message_text = 'time range must be correct';
+  end if;
+end if;
+end ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `workout_tonnage_validation` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`athlet`@`localhost` PROCEDURE `workout_tonnage_validation`(total int unsigned)
+begin
+if total = 0 then
+signal sqlstate '12348'
+set message_text = 'workout.tonnage must be > 0';
+end if;
+end ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -458,4 +833,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-06-12  2:26:35
+-- Dump completed on 2017-06-12  2:44:36
