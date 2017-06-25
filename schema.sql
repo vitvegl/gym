@@ -165,148 +165,152 @@ where a.nickname = nick
   and e.set_number = sequence_set_number;
 end //
 
-create procedure athlet_nickname_validation (nick varchar(30))
-begin
-if (char_length(nick) < 3) then
-signal sqlstate '12345'
-set message_text = 'nickname must be contains minimum 3 characters'; 
-end if;
-end //
-
 create trigger trig_athlet_nickname_insert_chk before insert on athlet
 for each row
 begin
-call athlet_nickname_validation (NEW.nickname);
+  if char_length(new.nickname) < 3 then
+    signal sqlstate '45000'
+    set message_text = 'athlet.nickname must be contains minimum 3 characters';
+  end if;
 end //
 
 create trigger trig_athlet_nickname_update_chk before update on athlet
 for each row
 begin
-call athlet_nickname_validation (NEW.nickname);
-end //
-
-create procedure workout_time_validation (stime datetime, ftime datetime)
-begin
-if ((stime is not null) and (ftime is not null)) then
-  if (unix_timestamp(stime) > unix_timestamp(ftime)) then
-  signal sqlstate '12346'
-  set message_text = 'time range must be correct';
+  if char_length(new.nickname) < 3 then
+    signal sqlstate '45000'
+    set message_text = 'athlet.nickname must be contains minimum 3 characters';
   end if;
-end if;
 end //
 
 create trigger trig_workout_time_insert_chk before insert on workout
 for each row
 begin
-call workout_time_validation (NEW.start_time, NEW.finish_time);
+  if ((new.start_time is not null) and (new.finish_time is not null)) then
+    if (unix_timestamp(new.start_time) > unix_timestamp(new.finish_time)) then
+      signal sqlstate '45002'
+      set message_text = 'time range must be correct';
+    end if;
+  end if;
 end //
 
 create trigger trig_workout_time_update_chk before update on workout
 for each row
 begin
-call workout_time_validation (NEW.start_time, NEW.finish_time);
-end //
-
-create procedure workout_duration_validation (duration time)
-begin
-if (duration is not null) then
-  if ((time(duration) < time('00:03:00'))) then
-  signal sqlstate '12347'
-  set message_text = 'workout.workout_duration must be longer than 3 minutes';
+  if ((new.start_time is not null) and (new.finish_time is not null)) then
+    if (unix_timestamp(new.start_time) > unix_timestamp(new.finish_time)) then
+      signal sqlstate '45002'
+      set message_text = 'time range must be correct';
+    end if;
   end if;
-end if;
 end //
 
 create trigger trig_workout_duration_insert_chk before insert on workout
 for each row
 begin
-call workout_duration_validation (NEW.workout_duration);
+  if new.workout_duration is not null then
+    if ((new.start_time is not null) and (new.finish_time is not null)) then
+      if (new.workout_duration != timediff(new.finish_time, new.start_time)) then
+        signal sqlstate '45004'
+        set message_text = 'workout.workout_duration is not correct, use calculate_workout_duration()';
+      elseif ((new.start_time is null) or (new.finish_time is null)) then
+        if (time(new.workout_duration) < time('00:03:00')) then
+          signal sqlstate '45005'
+          set message_text = 'workout.workout_duration must be longer than 3 minutes';
+        end if;
+      end if;
+    end if;
+  end if;
 end //
 
 create trigger trig_workout_duration_update_chk before update on workout
 for each row
 begin
-call workout_duration_validation (NEW.workout_duration);
-end //
-
-create procedure workout_tonnage_validation (total int unsigned)
-begin
-if total = 0 then
-signal sqlstate '12348'
-set message_text = 'workout.tonnage must be > 0';
-end if;
+  if new.workout_duration is not null then
+    if ((new.start_time is not null) and (new.finish_time is not null)) then
+      if (new.workout_duration != timediff(new.finish_time, new.start_time)) then
+        signal sqlstate '45004'
+        set message_text = 'workout.workout_duration is not correct, use calculate_workout_duration()';
+      elseif ((new.start_time is null) or (new.finish_time is null)) then
+        if (time(new.workout_duration) < time('00:03:00')) then
+          signal sqlstate '45005'
+          set message_text = 'workout.workout_duration must be longer than 3 minutes';
+        end if;
+      end if;
+    end if;
+  end if;
 end //
 
 create trigger trig_workout_tonnage_insert_chk before insert on workout
 for each row
 begin
-call workout_tonnage_validation (NEW.tonnage);
+  if new.tonnage = 0 then
+    signal sqlstate '45006'
+    set message_text = 'workout.tonnage must be > 0';
+  end if;
 end //
 
 create trigger trig_workout_tonnage_update_chk before update on workout
 for each row
 begin
-call workout_tonnage_validation (NEW.tonnage);
-end //
-
-create procedure exercise_description_validation (descr varchar(100))
-begin
-if (char_length(descr) < 3) then
-signal sqlstate '12349'
-set message_text = 'exercise.description must be contains minimum 3 characters';
-end if;
+  if new.tonnage = 0 then
+    signal sqlstate '45006'
+    set message_text = 'workout.tonnage must be > 0';
+  end if;
 end //
 
 create trigger trig_exercise_description_insert_chk before insert on exercise
 for each row
 begin
-call exercise_description_validation (NEW.description);
+  if (char_length(new.description) < 3) then
+    signal sqlstate '45007'
+    set message_text = 'exercise.description must be contains minimum 3 characters';
+  end if;
 end //
 
 create trigger trig_exercise_description_update_chk before update on exercise
 for each row
 begin
-call exercise_description_validation (NEW.description);
-end //
-
-create procedure exercise_rest_time_validation (rtime smallint unsigned)
-begin
-if ((rtime != 0) and (rtime < 30)) then
-signal sqlstate '12351'
-set message_text = 'exercise.rest_time_sec must be integer and >= 30 seconds';
-end if;
+  if (char_length(new.description) < 3) then
+    signal sqlstate '45007'
+    set message_text = 'exercise.description must be contains minimum 3 characters';
+  end if;
 end //
 
 create trigger trig_exercise_rest_time_insert_chk before insert on exercise
 for each row
 begin
-call exercise_rest_time_validation (NEW.rest_time_sec);
+  if ((new.rest_time_sec != 0) and (new.rest_time_sec < 30)) then
+    signal sqlstate '45008'
+    set message_text = 'exercise.rest_time_sec must be integer and >= 30 seconds';
+  end if;
 end //
 
 create trigger trig_exercise_rest_time_update_chk before update on exercise
 for each row
 begin
-call exercise_rest_time_validation (NEW.rest_time_sec);
-end //
-
-create procedure exercise_set_number_validation (seq_number tinyint unsigned)
-begin
-if seq_number = 0 then
-signal sqlstate '12352'
-set message_text = 'exercise.set_number must be integer and > 0';
-end if;
+  if ((new.rest_time_sec != 0) and (new.rest_time_sec < 30)) then
+    signal sqlstate '45008'
+    set message_text = 'exercise.rest_time_sec must be integer and >= 30 seconds';
+  end if;
 end //
 
 create trigger trig_exercise_set_number_insert_chk before insert on exercise
 for each row
 begin
-call exercise_set_number_validation (NEW.set_number);
+  if new.set_number = 0 then
+    signal sqlstate '45009'
+    set message_text = 'exercise.set_number must be integer and > 0';
+  end if;
 end //
 
 create trigger trig_exercise_set_number_update_chk before update on exercise
 for each row
 begin
-call exercise_set_number_validation (NEW.set_number);
+  if new.set_number = 0 then
+    signal sqlstate '45009'
+    set message_text = 'exercise.set_number must be integer and > 0';
+  end if;
 end //
 
 delimiter ;
