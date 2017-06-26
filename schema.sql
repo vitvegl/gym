@@ -205,6 +205,20 @@ begin
   end if;
 end //
 
+create procedure workout_date_validation (nick varchar(30), wdate date)
+begin
+  declare exit handler for sqlstate '45003' rollback;
+  if exists (
+    select w.workout_date from workout w
+      join athlet a on w.athlet_id = a.id
+    where w.workout_date = wdate
+      and a.nickname = nick
+  ) then
+      signal sqlstate '45003'
+      set message_text = 'workout.workout_date must be unique for athlet';
+  end if;
+end //
+
 create trigger trig_workout_duration_insert_chk before insert on workout
 for each row
 begin
