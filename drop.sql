@@ -14,8 +14,10 @@ drop procedure update_exercise_if_no_weight;
 drop procedure update_exercise_set_equipment;
 drop procedure update_exercise_set_style;
 
+drop procedure insert_into_workout;
+
 /* drop procedure athlet_nickname_validation; */
-/* drop procedure workout_date_validation; */
+drop procedure workout_date_validation;
 /* drop procedure workout_start_time_validation; */
 /* drop procedure workout_finish_time_validation; */
 

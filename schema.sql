@@ -205,16 +205,52 @@ begin
   end if;
 end //
 
-create procedure workout_date_validation (nick varchar(30), wdate date)
+create procedure insert_into_workout (nick varchar(30), wid int unsigned, wdate date, stime datetime, ftime datetime, duration time, tonn int unsigned, wdetails text, aid int unsigned)
 begin
   declare exit handler for sqlstate '45003' rollback;
+  if not exists (
+    select w.workout_date from workout w
+      join athlet a on w.athlet_id = a.id
+    where w.workout_date = wdate
+      and a.nickname = nick
+  ) then
+      insert into `workout` (
+        `id`,
+        `workout_date`,
+        `start_time`,
+        `finish_time`,
+        `workout_duration`,
+        `tonnage`,
+        `details`,
+        `athlet_id`
+      )
+        values
+      (
+        wid,
+        wdate,
+        stime,
+        ftime,
+        duration,
+        tonn,
+        wdetails,
+        aid
+      );
+  else
+    signal sqlstate '45003'
+    set message_text = 'workout.workout_date must be unique for athlet';
+  end if;
+end //
+
+create procedure workout_date_validation (nick varchar(30), wdate date)
+begin
+  declare exit handler for sqlstate '45004' rollback;
   if exists (
     select w.workout_date from workout w
       join athlet a on w.athlet_id = a.id
     where w.workout_date = wdate
       and a.nickname = nick
   ) then
-      signal sqlstate '45003'
+      signal sqlstate '45004'
       set message_text = 'workout.workout_date must be unique for athlet';
   end if;
 end //
@@ -225,11 +261,11 @@ begin
   if new.workout_duration is not null then
     if ((new.start_time is not null) and (new.finish_time is not null)) then
       if (new.workout_duration != timediff(new.finish_time, new.start_time)) then
-        signal sqlstate '45004'
+        signal sqlstate '45005'
         set message_text = 'workout.workout_duration is not correct, use calculate_workout_duration()';
       elseif ((new.start_time is null) or (new.finish_time is null)) then
         if (time(new.workout_duration) < time('00:03:00')) then
-          signal sqlstate '45005'
+          signal sqlstate '45006'
           set message_text = 'workout.workout_duration must be longer than 3 minutes';
         end if;
       end if;
@@ -243,11 +279,11 @@ begin
   if new.workout_duration is not null then
     if ((new.start_time is not null) and (new.finish_time is not null)) then
       if (new.workout_duration != timediff(new.finish_time, new.start_time)) then
-        signal sqlstate '45004'
+        signal sqlstate '45005'
         set message_text = 'workout.workout_duration is not correct, use calculate_workout_duration()';
       elseif ((new.start_time is null) or (new.finish_time is null)) then
         if (time(new.workout_duration) < time('00:03:00')) then
-          signal sqlstate '45005'
+          signal sqlstate '45006'
           set message_text = 'workout.workout_duration must be longer than 3 minutes';
         end if;
       end if;
@@ -259,7 +295,7 @@ create trigger trig_workout_tonnage_insert_chk before insert on workout
 for each row
 begin
   if new.tonnage = 0 then
-    signal sqlstate '45006'
+    signal sqlstate '45007'
     set message_text = 'workout.tonnage must be > 0';
   end if;
 end //
@@ -268,7 +304,7 @@ create trigger trig_workout_tonnage_update_chk before update on workout
 for each row
 begin
   if new.tonnage = 0 then
-    signal sqlstate '45006'
+    signal sqlstate '45007'
     set message_text = 'workout.tonnage must be > 0';
   end if;
 end //
@@ -277,7 +313,7 @@ create trigger trig_exercise_description_insert_chk before insert on exercise
 for each row
 begin
   if (char_length(new.description) < 3) then
-    signal sqlstate '45007'
+    signal sqlstate '45008'
     set message_text = 'exercise.description must be contains minimum 3 characters';
   end if;
 end //
@@ -286,7 +322,7 @@ create trigger trig_exercise_description_update_chk before update on exercise
 for each row
 begin
   if (char_length(new.description) < 3) then
-    signal sqlstate '45007'
+    signal sqlstate '45008'
     set message_text = 'exercise.description must be contains minimum 3 characters';
   end if;
 end //
@@ -295,7 +331,7 @@ create trigger trig_exercise_rest_time_insert_chk before insert on exercise
 for each row
 begin
   if ((new.rest_time_sec != 0) and (new.rest_time_sec < 30)) then
-    signal sqlstate '45008'
+    signal sqlstate '45009'
     set message_text = 'exercise.rest_time_sec must be integer and >= 30 seconds';
   end if;
 end //
@@ -304,7 +340,7 @@ create trigger trig_exercise_rest_time_update_chk before update on exercise
 for each row
 begin
   if ((new.rest_time_sec != 0) and (new.rest_time_sec < 30)) then
-    signal sqlstate '45008'
+    signal sqlstate '45009'
     set message_text = 'exercise.rest_time_sec must be integer and >= 30 seconds';
   end if;
 end //
@@ -313,7 +349,7 @@ create trigger trig_exercise_set_number_insert_chk before insert on exercise
 for each row
 begin
   if new.set_number = 0 then
-    signal sqlstate '45009'
+    signal sqlstate '45010'
     set message_text = 'exercise.set_number must be integer and > 0';
   end if;
 end //
@@ -322,7 +358,7 @@ create trigger trig_exercise_set_number_update_chk before update on exercise
 for each row
 begin
   if new.set_number = 0 then
-    signal sqlstate '45009'
+    signal sqlstate '45010'
     set message_text = 'exercise.set_number must be integer and > 0';
   end if;
 end //
