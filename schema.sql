@@ -6,9 +6,9 @@ create table `athlet` (
 
 create table `workout` (
   `id` int unsigned not null auto_increment,
-  `workout_date` date unique not null,
-  `start_time` datetime unique,
-  `finish_time` datetime unique,
+  `workout_date` date not null,
+  `start_time` datetime,
+  `finish_time` datetime,
   `workout_duration` time,
   `tonnage` int unsigned,
   `details` text,
