@@ -1,0 +1,67 @@
+#!/usr/bin/env ruby
+require 'mysql2'
+require 'optparse'
+
+opts = OptionParser.new do |opt|
+  opt.on("--host [hostname]", String) do |host|
+    @host = host || 'localhost'
+  end
+
+  opt.on("--port [port]", Numeric) do |port|
+    @port = port || 3306
+  end
+
+  opt.on("--database [database]", String) do |database|
+    @database = database
+  end
+
+  opt.on("--username [user]", String) do |user|
+    @username = user
+  end
+
+  opt.on("--password [password]", String) do |pass|
+    @password = pass
+  end
+
+  opt.on("--sql_file [sqlfile]", String) do |sqlfile|
+    @sql_file = sqlfile
+  end
+end
+
+def run
+  raise OptionParser::MissingArgument unless self.instance_variable_defined?(:@database)
+  raise OptionParser::MissingArgument unless self.instance_variable_defined?(:@username)
+  raise OptionParser::MissingArgument unless self.instance_variable_defined?(:@password)
+  raise OptionParser::MissingArgument unless self.instance_variable_defined?(:@sql_file)
+
+  begin
+    @mysql_cli =
+    Mysql2::Client.new(
+      database: @database,
+      username: @username,
+      password: @password
+    )
+    sql = IO.read @sql_file
+    statements = sql.split(/;$/)
+    statements.pop
+
+    statements.each do |statement|
+      @mysql_cli.query(statement)
+    end
+    puts "Sucessfull"
+  rescue Exception => e
+    puts e.message
+  ensure
+    @mysql_cli.close
+  end
+end
+
+begin
+  opts.parse!
+  run
+rescue TypeError => e
+  puts e.message
+rescue OptionParser::MissingArgument, OptionParser::InvalidArgument
+  print opts.help
+  exit 1
+end
