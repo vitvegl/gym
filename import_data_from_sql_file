@@ -52,7 +52,7 @@ def run
     end
     puts "Sucessfull"
   rescue Mysql2::Error
-    puts "Please, rollback your changes"
+    puts "it was transaction rollback"
   rescue Exception => e
     puts e.message
   ensure
