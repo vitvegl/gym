@@ -51,6 +51,8 @@ def run
       @mysql_cli.query(statement)
     end
     puts "Sucessfull"
+  rescue Mysql2::Error
+    puts "Please, rollback your changes"
   rescue Exception => e
     puts e.message
   ensure
