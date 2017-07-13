@@ -47,13 +47,15 @@ insert into `equipment` (`id`, `equipment`) select e.id, 'штанга' from exe
 where a.nickname = 'vit'
   and w.workout_date = '20170521';
 
-call update_exercise_set_equipment_specific_set ('vit', '20170521', 'гантелі', 'Махи вперед', 1);
-call update_exercise_set_equipment_specific_set ('vit', '20170521', 'гантелі', 'Махи вперед', 2);
-call update_exercise_set_equipment_specific_set ('vit', '20170521', 'гантелі', 'Махи вперед', 3);
+/* call update_exercise_set_equipment_specific_set ('vit', '20170521', 'гантелі', 'Махи вперед', 1); */
+/* call update_exercise_set_equipment_specific_set ('vit', '20170521', 'гантелі', 'Махи вперед', 2); */
+/* call update_exercise_set_equipment_specific_set ('vit', '20170521', 'гантелі', 'Махи вперед', 3); */
+call update_exercise_set_equipment ('vit', '20170521', 'гантелі', 'Махи вперед');
 
-call update_exercise_set_equipment_specific_set ('vit', '20170521', 'гантелі', 'Махи у сторони', 1);
-call update_exercise_set_equipment_specific_set ('vit', '20170521', 'гантелі', 'Махи у сторони', 2);
-call update_exercise_set_equipment_specific_set ('vit', '20170521', 'гантелі', 'Махи у сторони', 3);
+/* call update_exercise_set_equipment_specific_set ('vit', '20170521', 'гантелі', 'Махи у сторони', 1); */
+/* call update_exercise_set_equipment_specific_set ('vit', '20170521', 'гантелі', 'Махи у сторони', 2); */
+/* call update_exercise_set_equipment_specific_set ('vit', '20170521', 'гантелі', 'Махи у сторони', 3); */
+call update_exercise_set_equipment ('vit', '20170521', 'гантелі', 'Махи у сторони');
 
 call calculate_workout_duration ('vit', '20170521');
 call calculate_tonnage ('vit', '20170521');

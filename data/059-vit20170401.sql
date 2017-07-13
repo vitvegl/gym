@@ -49,9 +49,10 @@ where a.nickname = 'vit'
 
 call update_exercise_if_no_weight ('vit', '20170401');
 
-call update_exercise_set_equipment_specific_set ('vit', '20170401', 'гантель', 'Пулл-овер сидячи', 1);
-call update_exercise_set_equipment_specific_set ('vit', '20170401', 'гантель', 'Пулл-овер сидячи', 2);
-call update_exercise_set_equipment_specific_set ('vit', '20170401', 'гантель', 'Пулл-овер сидячи', 3);
+/* call update_exercise_set_equipment_specific_set ('vit', '20170401', 'гантель', 'Пулл-овер сидячи', 1); */
+/* call update_exercise_set_equipment_specific_set ('vit', '20170401', 'гантель', 'Пулл-овер сидячи', 2); */
+/* call update_exercise_set_equipment_specific_set ('vit', '20170401', 'гантель', 'Пулл-овер сидячи', 3); */
+call update_exercise_set_equipment ('vit', '20170401', 'гантель', 'Пулл-овер сидячи');
 
 call calculate_tonnage ('vit', '20170401');
 

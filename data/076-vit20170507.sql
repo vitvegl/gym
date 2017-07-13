@@ -46,9 +46,12 @@ insert into `equipment` (`id`, `equipment`) select e.id, 'штанга' from exe
 where a.nickname = 'vit'
   and w.workout_date = '20170507';
 
-call update_exercise_set_equipment_specific_set ('vit', '20170507', 'гантелі', 'Махи вперед', 1);
-call update_exercise_set_equipment_specific_set ('vit', '20170507', 'гантелі', 'Махи вперед', 2);
-call update_exercise_set_equipment_specific_set ('vit', '20170507', 'гантелі', 'Махи у сторони', 1);
-call update_exercise_set_equipment_specific_set ('vit', '20170507', 'гантелі', 'Махи у сторони', 2);
+/* call update_exercise_set_equipment_specific_set ('vit', '20170507', 'гантелі', 'Махи вперед', 1); */
+/* call update_exercise_set_equipment_specific_set ('vit', '20170507', 'гантелі', 'Махи вперед', 2); */
+call update_exercise_set_equipment ('vit', '20170507', 'гантелі', 'Махи вперед');
+
+/* call update_exercise_set_equipment_specific_set ('vit', '20170507', 'гантелі', 'Махи у сторони', 1); */
+/* call update_exercise_set_equipment_specific_set ('vit', '20170507', 'гантелі', 'Махи у сторони', 2); */
+call update_exercise_set_equipment ('vit', '20170507', 'гантелі', 'Махи у сторони');
 
 commit;
