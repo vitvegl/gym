@@ -37,6 +37,8 @@ def run
   begin
     @mysql_cli =
     Mysql2::Client.new(
+      host: @host,
+      port: @port,
       database: @database,
       username: @username,
       password: @password
