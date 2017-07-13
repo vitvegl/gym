@@ -70,9 +70,9 @@ where a.nickname = 'vit' and w.workout_date = '2016-11-23';
 /* вправи із вагою тіла */
 call update_exercise_if_no_weight ('vit', '2016-11-23');
 
-call update_exercise_set_equipment ('vit', '2016-11-23', 'гантель', 'Пулл-овер стоячи', 1);
-call update_exercise_set_equipment ('vit', '2016-11-23', 'гантель', 'Пулл-овер стоячи', 2);
-call update_exercise_set_equipment ('vit', '2016-11-23', 'гантель', 'Пулл-овер стоячи', 3);
+call update_exercise_set_equipment_specific_set ('vit', '2016-11-23', 'гантель', 'Пулл-овер стоячи', 1);
+call update_exercise_set_equipment_specific_set ('vit', '2016-11-23', 'гантель', 'Пулл-овер стоячи', 2);
+call update_exercise_set_equipment_specific_set ('vit', '2016-11-23', 'гантель', 'Пулл-овер стоячи', 3);
 
 call calculate_tonnage ('vit', '2016-11-23');
 

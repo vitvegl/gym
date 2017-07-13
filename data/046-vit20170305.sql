@@ -48,13 +48,13 @@ where a.nickname = 'vit'
   and w.workout_date = '2017-03-05';
 
 /* Присідання з гирями */
-call update_exercise_set_equipment ('vit', '2017-03-05', 'гирі', 'Присідання', 1);
-call update_exercise_set_equipment ('vit', '2017-03-05', 'гирі', 'Присідання', 2);
-call update_exercise_set_equipment ('vit', '2017-03-05', 'гирі', 'Присідання', 3);
+call update_exercise_set_equipment_specific_set ('vit', '2017-03-05', 'гирі', 'Присідання', 1);
+call update_exercise_set_equipment_specific_set ('vit', '2017-03-05', 'гирі', 'Присідання', 2);
+call update_exercise_set_equipment_specific_set ('vit', '2017-03-05', 'гирі', 'Присідання', 3);
 
 /* Станова тяга зі штангою */
-call update_exercise_set_equipment ('vit', '2017-03-05', 'штанга', 'Станова тяга', 1);
-call update_exercise_set_equipment ('vit', '2017-03-05', 'штанга', 'Станова тяга', 2);
-call update_exercise_set_equipment ('vit', '2017-03-05', 'штанга', 'Станова тяга', 3);
+call update_exercise_set_equipment_specific_set ('vit', '2017-03-05', 'штанга', 'Станова тяга', 1);
+call update_exercise_set_equipment_specific_set ('vit', '2017-03-05', 'штанга', 'Станова тяга', 2);
+call update_exercise_set_equipment_specific_set ('vit', '2017-03-05', 'штанга', 'Станова тяга', 3);
 
 commit;

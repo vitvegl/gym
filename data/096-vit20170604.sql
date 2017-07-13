@@ -43,8 +43,8 @@ where a.nickname = 'vit'
   and w.workout_date = '20170604';
 
 
-call update_exercise_set_style ('vit', '20170604', 'штанга', 'лямки', 'Станова тяга', 6);
-call update_exercise_set_style ('vit', '20170604', 'штанга', 'лямки', 'Станова тяга', 7);
+call update_exercise_set_style_specific_set ('vit', '20170604', 'штанга', 'лямки', 'Станова тяга', 6);
+call update_exercise_set_style_specific_set ('vit', '20170604', 'штанга', 'лямки', 'Станова тяга', 7);
 
 call calculate_workout_duration ('vit', '20170604');
 call calculate_tonnage ('vit', '20170604');

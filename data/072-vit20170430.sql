@@ -49,8 +49,8 @@ where a.nickname = 'vit'
   and w.workout_date = '20170430';
 
 /* Пулл-овер з гантелею */
-call update_exercise_set_equipment ('vit', '20170430', 'гантель', 'Пулл-овер стоячи', 1);
-call update_exercise_set_equipment ('vit', '20170430', 'гантель', 'Пулл-овер стоячи', 2);
+call update_exercise_set_equipment_specific_set ('vit', '20170430', 'гантель', 'Пулл-овер стоячи', 1);
+call update_exercise_set_equipment_specific_set ('vit', '20170430', 'гантель', 'Пулл-овер стоячи', 2);
 
 call calculate_tonnage ('vit', '20170430');
 

@@ -48,8 +48,8 @@ insert into `equipment` (`id`, `equipment`) select e.id, 'штанга' from exe
 where a.nickname = 'vit'
   and w.workout_date = '20170525';
 
-call update_exercise_set_equipment ('vit', '20170525', 'тренажер', 'Шраги', 1);
-call update_exercise_set_equipment ('vit', '20170525', 'тренажер', 'Шраги', 2);
+call update_exercise_set_equipment_specific_set ('vit', '20170525', 'тренажер', 'Шраги', 1);
+call update_exercise_set_equipment_specific_set ('vit', '20170525', 'тренажер', 'Шраги', 2);
 
 call calculate_workout_duration ('vit', '20170525');
 call calculate_tonnage ('vit', '20170525');

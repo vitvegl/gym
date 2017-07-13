@@ -44,6 +44,6 @@ where a.nickname = 'vit'
   and w.workout_date = '20170423';
 
 /* Шраги з гирями */
-call update_exercise_set_equipment ('vit', '20170423', 'гирі', 'Шраги', 1);
+call update_exercise_set_equipment_specific_set ('vit', '20170423', 'гирі', 'Шраги', 1);
 
 commit;

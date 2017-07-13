@@ -137,7 +137,19 @@ where a.nickname = nick
   and e.weight_kg = 0;
 end //
 
-create procedure update_exercise_set_equipment (nick varchar(30), wdate date, workout_equipment enum('гантель', 'гантелі', 'штанга', 'гиря', 'гирі', 'тренажер'), exercise_description varchar(100), sequence_set_number tinyint unsigned)
+create procedure update_exercise_set_equipment (nick varchar(30), wdate date, workout_equipment enum('гантель', 'гантелі', 'штанга', 'гиря', 'гирі', 'тренажер'), exercise_description varchar(100))
+begin
+update exercise e
+  join equipment eq on eq.id = e.id
+  join workout w on e.workout_id = w.id
+  join athlet a on w.athlet_id = a.id
+set eq.equipment = workout_equipment
+where a.nickname = nick
+  and w.workout_date = wdate
+  and e.description = exercise_description;
+end //
+
+create procedure update_exercise_set_equipment_specific_set (nick varchar(30), wdate date, workout_equipment enum('гантель', 'гантелі', 'штанга', 'гиря', 'гирі', 'тренажер'), exercise_description varchar(100), sequence_set_number tinyint unsigned)
 begin
 update exercise e
   join equipment eq on eq.id = e.id
@@ -150,7 +162,21 @@ where a.nickname = nick
   and e.set_number = sequence_set_number;
 end //
 
-create procedure update_exercise_set_style (nick varchar(30), wdate date, workout_equipment enum('штанга', 'гантель', 'гантелі', 'гиря', 'гирі', 'тренажер', 'власна вага'), workout_style_equipment enum('пояс', 'лямки', 'бинти', 'одяг', 'без екіпірування'), exercise_description varchar(100), sequence_set_number tinyint unsigned)
+create procedure update_exercise_set_style (nick varchar(30), wdate date, workout_equipment enum('штанга', 'гантель', 'гантелі', 'гиря', 'гирі', 'тренажер', 'власна вага'), workout_style_equipment enum('пояс', 'лямки', 'бинти', 'одяг', 'без екіпірування'), exercise_description varchar(100))
+begin
+update exercise e
+  join equipment eq on eq.id = e.id
+  join style s on s.id = e.id
+  join workout w on e.workout_id = w.id
+  join athlet a on w.athlet_id = a.id
+set s.equipment = workout_style_equipment
+where a.nickname = nick
+  and w.workout_date = wdate
+  and eq.equipment = workout_equipment
+  and e.description = exercise_description;
+end //
+
+create procedure update_exercise_set_style_specific_set (nick varchar(30), wdate date, workout_equipment enum('штанга', 'гантель', 'гантелі', 'гиря', 'гирі', 'тренажер', 'власна вага'), workout_style_equipment enum('пояс', 'лямки', 'бинти', 'одяг', 'без екіпірування'), exercise_description varchar(100), sequence_set_number tinyint unsigned)
 begin
 update exercise e
   join equipment eq on eq.id = e.id

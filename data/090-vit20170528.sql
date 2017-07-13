@@ -47,9 +47,9 @@ where a.nickname = 'vit'
   and w.workout_date = '20170528';
 
 /* лавка Скотта */
-call update_exercise_set_equipment ('vit', '20170528', 'тренажер', 'Згинання рук сидячи', 1);
-call update_exercise_set_equipment ('vit', '20170528', 'тренажер', 'Згинання рук сидячи', 2);
-call update_exercise_set_equipment ('vit', '20170528', 'тренажер', 'Згинання рук сидячи', 3);
+call update_exercise_set_equipment_specific_set ('vit', '20170528', 'тренажер', 'Згинання рук сидячи', 1);
+call update_exercise_set_equipment_specific_set ('vit', '20170528', 'тренажер', 'Згинання рук сидячи', 2);
+call update_exercise_set_equipment_specific_set ('vit', '20170528', 'тренажер', 'Згинання рук сидячи', 3);
 
 call calculate_workout_duration ('vit', '20170528');
 call calculate_tonnage ('vit', '20170528');

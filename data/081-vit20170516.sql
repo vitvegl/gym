@@ -41,10 +41,10 @@ insert into `equipment` (`id`) select e.id from exercise e
 where a.nickname = 'vit'
   and w.workout_date = '20170516';
 
-call update_exercise_set_equipment ('vit', '20170516', 'гантель', 'Пулл-овер стоячи', 1);
-call update_exercise_set_equipment ('vit', '20170516', 'гантель', 'Пулл-овер стоячи', 2);
-call update_exercise_set_equipment ('vit', '20170516', 'гантель', 'Пулл-овер стоячи', 3);
-call update_exercise_set_equipment ('vit', '20170516', 'гантель', 'Пулл-овер стоячи', 4);
+call update_exercise_set_equipment_specific_set ('vit', '20170516', 'гантель', 'Пулл-овер стоячи', 1);
+call update_exercise_set_equipment_specific_set ('vit', '20170516', 'гантель', 'Пулл-овер стоячи', 2);
+call update_exercise_set_equipment_specific_set ('vit', '20170516', 'гантель', 'Пулл-овер стоячи', 3);
+call update_exercise_set_equipment_specific_set ('vit', '20170516', 'гантель', 'Пулл-овер стоячи', 4);
 
 call calculate_workout_duration ('vit', '20170516');
 call calculate_tonnage ('vit', '20170516');

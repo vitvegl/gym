@@ -12,7 +12,9 @@ drop procedure set_athlet_id;
 drop procedure set_workout_id;
 drop procedure update_exercise_if_no_weight;
 drop procedure update_exercise_set_equipment;
+drop procedure update_exercise_set_equipment_specific_set;
 drop procedure update_exercise_set_style;
+drop procedure update_exercise_set_style_specific_set;
 
 drop procedure insert_into_workout;
 
