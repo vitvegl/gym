@@ -2,10 +2,14 @@ start transaction;
 
 call set_athlet_id ('<%= @athlet %>');
 
+<% if self.instance_variable_defined?(:@start_time) and self.instance_variable_defined?(:@finish_time) %>insert into `workout` (`workout_date`, `start_time`, `finish_time`, `athlet_id`)
+  values
+('<%= @date %>', '<%= @start_time %>', '<%= @finish_time %>', (select @athlet_id));
+<% else %>
 insert into `workout` (`workout_date`, `workout_duration`, `athlet_id`)
   values
 ('<%= @date %>', '<%= @duration %>', (select @athlet_id));
-
+<% end %>
 call set_workout_id ('<%= @athlet %>', '<%= @date %>');
 
 /* <%= @workout_type %> */

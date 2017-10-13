@@ -18,6 +18,16 @@ opts = OptionParser.new do |opt|
     @duration = dt.strftime("%H:%M")
   end
 
+  opt.on("--start-time=[year:month:day hours:minutes]", String) do |start_time|
+    st = DateTime.parse(start_time)
+    @start_time = st.strftime("%Y-%m-%d %H:%M")
+  end
+
+  opt.on("--finish-time=[year:month:day hours:minutes]", String) do |finish_time|
+    ft = DateTime.parse(finish_time)
+    @finish_time = ft.strftime("%Y-%m-%d %H:%M")
+  end
+
   opt.on("--workout-type=(split|fullbody)", String) do |workout_type|
     if workout_type === "split" or workout_type === "fullbody"
       @workout_type = workout_type
@@ -70,11 +80,15 @@ end
 def run
   raise OptionParser::MissingArgument unless self.instance_variable_defined?("@athlet")
   raise OptionParser::MissingArgument unless self.instance_variable_defined?("@date")
-  raise OptionParser::MissingArgument unless self.instance_variable_defined?("@duration")
+  #raise OptionParser::MissingArgument unless self.instance_variable_defined?("@duration")
   raise OptionParser::MissingArgument unless self.instance_variable_defined?("@workout_type")
   raise OptionParser::MissingArgument unless self.instance_variable_defined?("@number")
   raise OptionParser::MissingArgument unless self.instance_variable_defined?("@style")
   raise OptionParser::MissingArgument unless self.instance_variable_defined?("@equipment")
+
+  if not self.instance_variable_defined?("@duration") and not self.instance_variable_defined?("@start_time") and not self.instance_variable_defined?("@finish_time")
+    raise OptionParser::MissingArgument
+  end
 
   insert_data_into_sql_file
 end
