@@ -147,6 +147,15 @@ begin
     and w.workout_date = wdate;
 end //
 
+create procedure set_zero_tonnage (nick varchar(30), wdate date)
+begin
+update workout w
+  join athlet a on w.athlet_id = a.id
+set tonnage = 0
+where a.nickname = nick
+  and w.workout_date = wdate;
+end //
+
 create procedure set_athlet_id (nick varchar(30))
 begin
 set @athlet_id = (select id from athlet where nickname = nick);
@@ -173,7 +182,7 @@ where a.nickname = nick
   and e.weight_kg = 0;
 end //
 
-create procedure update_exercise_set_equipment (nick varchar(30), wdate date, workout_equipment enum('гантель', 'гантелі', 'штанга', 'гиря', 'гирі', 'тренажер'), exercise_description varchar(100))
+create procedure update_exercise_set_equipment (nick varchar(30), wdate date, workout_equipment enum('гантель', 'гантелі', 'штанга', 'гиря', 'гирі', 'снаряд', 'тренажер'), exercise_description varchar(100))
 begin
 update exercise e
   join equipment eq on eq.id = e.id
@@ -185,7 +194,7 @@ where a.nickname = nick
   and e.description = exercise_description;
 end //
 
-create procedure update_exercise_set_equipment_specific_set (nick varchar(30), wdate date, workout_equipment enum('гантель', 'гантелі', 'штанга', 'гиря', 'гирі', 'тренажер'), exercise_description varchar(100), sequence_set_number tinyint unsigned)
+create procedure update_exercise_set_equipment_specific_set (nick varchar(30), wdate date, workout_equipment enum('гантель', 'гантелі', 'штанга', 'гиря', 'гирі', 'снаряд', 'тренажер'), exercise_description varchar(100), sequence_set_number tinyint unsigned)
 begin
 update exercise e
   join equipment eq on eq.id = e.id
@@ -198,7 +207,7 @@ where a.nickname = nick
   and e.set_number = sequence_set_number;
 end //
 
-create procedure update_exercise_set_style (nick varchar(30), wdate date, workout_equipment enum('штанга', 'гантель', 'гантелі', 'гиря', 'гирі', 'тренажер', 'власна вага'), workout_style_equipment enum('пояс', 'лямки', 'бинти', 'одяг', 'без екіпірування'), exercise_description varchar(100))
+create procedure update_exercise_set_style (nick varchar(30), wdate date, workout_equipment enum('штанга', 'гантель', 'гантелі', 'гиря', 'гирі', 'снаряд', 'тренажер', 'власна вага'), workout_style_equipment enum('пояс', 'лямки', 'бинти', 'одяг', 'без екіпірування'), exercise_description varchar(100))
 begin
 update exercise e
   join equipment eq on eq.id = e.id
@@ -212,7 +221,7 @@ where a.nickname = nick
   and e.description = exercise_description;
 end //
 
-create procedure update_exercise_set_style_specific_set (nick varchar(30), wdate date, workout_equipment enum('штанга', 'гантель', 'гантелі', 'гиря', 'гирі', 'тренажер', 'власна вага'), workout_style_equipment enum('пояс', 'лямки', 'бинти', 'одяг', 'без екіпірування'), exercise_description varchar(100), sequence_set_number tinyint unsigned)
+create procedure update_exercise_set_style_specific_set (nick varchar(30), wdate date, workout_equipment enum('штанга', 'гантель', 'гантелі', 'гиря', 'гирі', 'снаряд', 'тренажер', 'власна вага'), workout_style_equipment enum('пояс', 'лямки', 'бинти', 'одяг', 'без екіпірування'), exercise_description varchar(100), sequence_set_number tinyint unsigned)
 begin
 update exercise e
   join equipment eq on eq.id = e.id
@@ -356,18 +365,18 @@ end //
 create trigger trig_workout_tonnage_insert_chk before insert on workout
 for each row
 begin
-  if new.tonnage = 0 then
+  if new.tonnage < 0 then
     signal sqlstate '45007'
-    set message_text = 'workout.tonnage must be > 0';
+    set message_text = 'workout.tonnage must be >= 0';
   end if;
 end //
 
 create trigger trig_workout_tonnage_update_chk before update on workout
 for each row
 begin
-  if new.tonnage = 0 then
+  if new.tonnage < 0 then
     signal sqlstate '45007'
-    set message_text = 'workout.tonnage must be > 0';
+    set message_text = 'workout.tonnage must be >= 0';
   end if;
 end //
 

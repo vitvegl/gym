@@ -49,9 +49,9 @@ opts = OptionParser.new do |opt|
     end
   end
 
-  opt.on("--workout-equipment=(штанга|гантель|гантелі|гиря|гирі|тренажер|власна вага)") do |equipment|
+  opt.on("--workout-equipment=(штанга|гантель|гантелі|гиря|гирі|снаряд|тренажер|власна вага)") do |equipment|
     case equipment
-    when "штанга", "гантель", "гантелі", "гиря", "гирі", "тренажер", "власна вага"
+    when "штанга", "гантель", "гантелі", "гиря", "гирі", "снаряд", "тренажер", "власна вага"
       @equipment = equipment
     else
       raise TypeError
