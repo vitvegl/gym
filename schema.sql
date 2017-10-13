@@ -81,7 +81,7 @@ create table `style` (
 
 create table `equipment` (
   `id` int unsigned not null auto_increment,
-  `equipment` enum('штанга', 'гантель', 'гантелі', 'гиря', 'гирі', 'тренажер', 'власна вага') default 'гантелі' not null,
+  `equipment` enum('штанга', 'гантель', 'гантелі', 'гиря', 'гирі', 'тренажер', 'снаряд', 'власна вага') default 'гантелі' not null,
   `description` varchar(100),
   primary key (`id`) using btree,
   constraint fk_equipment foreign key (`id`) references `exercise` (`id`) on delete restrict
