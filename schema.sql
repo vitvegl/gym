@@ -114,7 +114,7 @@ begin
       join athlet a on w.athlet_id = a.id
     where a.nickname = nick
       and w.workout_date = wdate
-      and eq.equipment in ('штанга', 'гантель', 'гиря', 'тренажер')
+      and eq.equipment in ('штанга', 'гантель', 'гиря', 'тренажер', 'снаряд')
   );
 
   if (total is null) then
