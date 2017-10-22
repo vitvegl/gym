@@ -29,8 +29,8 @@ insert into `style` (`id`) select e.id from exercise e
 where a.nickname = 'vit'
   and w.workout_date = '20170910';
 
-/* гантелі */
-insert into `equipment` (`id`) select e.id from exercise e
+/* власна вага */
+insert into `equipment` (`id`, `equipment`) select e.id, 'власна вага' from exercise e
   join workout w on e.workout_id = w.id
   join athlet a on w.athlet_id = a.id
 where a.nickname = 'vit'
