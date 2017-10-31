@@ -60,21 +60,29 @@ opts = OptionParser.new do |opt|
 end
 
 def insert_data_into_sql_file
-  template = 'template.sql.erb'
-  if File.exist?(template)
-    data = ERB.new(IO.read(template))
-    file = File.open("#{@number}-#{@athlet}#{@date}.sql", "wb")
 
-    begin
-      file.write(data.result)
-    rescue IOError => e
-      puts e.message
-    ensure
-      file.close
-    end
+  if self.instance_variable_defined?(:@start_time) and self.instance_variable_defined?(:@finish_time)
+    template = "template.sql.erb"
   else
-    raise "Template #{template} not found"
+    template = "duration_template.sql.erb"
   end
+
+  sql_file = "#{@number}-#{@athlet}#{@date}.sql"
+
+  begin
+    if File.exist?(template)
+      data = ERB.new(IO.read(template))
+      f = File.open(sql_file, "wb")
+      f.write(data.result)
+    else
+      raise "Template #{template} not found"
+    end
+  rescue IOError => e
+    puts e.message
+  ensure
+    f.close
+  end
+
 end
 
 def run
